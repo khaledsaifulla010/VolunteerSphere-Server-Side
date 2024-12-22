@@ -10,7 +10,6 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-
 // Connect With MongoDB //
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.ugbxhsw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -25,9 +24,20 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    
+    const VolunteerNeedsNowCollections = client
+      .db("VolunteerSphere")
+      .collection("VolunteerNeedsNow");
+
+    // GET VOLUNTEER NEEDS NOW DATA //
+
+    app.get("/volunteerNeedsNow", async (req, res) => {
+      const cursor = VolunteerNeedsNowCollections.find().sort({ deadline: 1 });
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // FINALLY FINISH THE CODES //
   } finally {
-    
   }
 }
 run().catch(console.dir);
