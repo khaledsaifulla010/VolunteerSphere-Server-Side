@@ -28,10 +28,22 @@ async function run() {
       .db("VolunteerSphere")
       .collection("VolunteerNeedsNow");
 
+    const NewsBlogsCollections = client
+      .db("VolunteerSphere")
+      .collection("NewsBlogs");
+
     // GET VOLUNTEER NEEDS NOW DATA //
 
     app.get("/volunteerNeedsNow", async (req, res) => {
       const cursor = VolunteerNeedsNowCollections.find().sort({ deadline: 1 });
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // GET NEWS & BLOGS DATA //
+
+    app.get("/newsBlogs", async (req, res) => {
+      const cursor = NewsBlogsCollections.find();
       const result = await cursor.toArray();
       res.send(result);
     });
