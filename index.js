@@ -32,6 +32,10 @@ async function run() {
       .db("VolunteerSphere")
       .collection("NewsBlogs");
 
+    const AllVolunteerNeedsPostsCollections = client
+      .db("VolunteerSphere")
+      .collection("AllVolunteerNeedsPosts");
+
     // GET VOLUNTEER NEEDS NOW DATA //
 
     app.get("/volunteerNeedsNow", async (req, res) => {
@@ -45,6 +49,15 @@ async function run() {
     app.get("/newsBlogs", async (req, res) => {
       const cursor = NewsBlogsCollections.find();
       const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // POST ALL VOLUNTEER NEEDS POST DATA
+    app.post("/allVolunteerNeedsPosts", async (req, res) => {
+      const newVolunteerNeedsPost = req.body;
+      const result = await AllVolunteerNeedsPostsCollections.insertOne(
+        newVolunteerNeedsPost
+      );
       res.send(result);
     });
 
