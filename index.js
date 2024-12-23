@@ -84,9 +84,18 @@ async function run() {
     // POST A VOLUNTEER DATA //
 
     app.post("/allVolunteers", async (req, res) => {
-      const newVolunteers = req.body;
-      const result = await AllVolunteersCollections.insertOne(newVolunteers);
-      res.send(result);
+      const newVolunteer = req.body;
+      const result = await AllVolunteersCollections.insertOne(newVolunteer);
+
+      if (result.insertedId) {
+        const updatedPost = await AllVolunteerNeedsPostsCollections.updateOne(
+          { _id: new ObjectId(newVolunteer.postId) },
+          { $inc: { volunteersNeeded: -1 } }
+        );
+        res.send({
+          updatedPost,
+        });
+      }
     });
 
     // FINALLY FINISH THE CODES //
