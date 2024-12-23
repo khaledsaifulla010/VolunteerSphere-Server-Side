@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT || 5000;
 
 // Middlewares //
@@ -56,6 +56,15 @@ async function run() {
 
     app.get("/allVolunteerNeedsPosts", async (req, res) => {
       const result = await AllVolunteerNeedsPostsCollections.find().toArray();
+      res.send(result);
+    });
+
+    // GET A SINGLE VOLUNTEER NEEDS POST DATA //
+
+    app.get("/allVolunteerNeedsPosts/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await AllVolunteerNeedsPostsCollections.findOne(query);
       res.send(result);
     });
 
