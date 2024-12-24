@@ -72,6 +72,17 @@ async function run() {
       res.send(result);
     });
 
+    // GET ALL VOLUNTEER NEEDS POST DATA INDIVIDUAL USER EMAIL //
+
+    app.get("/allVolunteerNeedsPostsIndividually", async (req, res) => {
+      const email = req.query.email;
+      const query = { organizerEmail: email };
+      const result = await AllVolunteerNeedsPostsCollections.find(
+        query
+      ).toArray();
+      res.send(result);
+    });
+
     // POST ALL VOLUNTEER NEEDS POST DATA
     app.post("/allVolunteerNeedsPosts", async (req, res) => {
       const newVolunteerNeedsPost = req.body;
