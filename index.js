@@ -90,6 +90,15 @@ async function run() {
       res.send(result);
     });
 
+    // GET ALL VOLUNTEERS POST DATA INDIVIDUAL USER EMAIL//
+
+    app.get("/allVolunteersRequestDataIndividually", async (req, res) => {
+      const email = req.query.email;
+      const query = { volunteerEmail: email };
+      const result = await AllVolunteersCollections.find(query).toArray();
+      res.send(result);
+    });
+
     // POST ALL VOLUNTEER NEEDS POST DATA
     app.post("/allVolunteerNeedsPosts", async (req, res) => {
       const newVolunteerNeedsPost = req.body;
