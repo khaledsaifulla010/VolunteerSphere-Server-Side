@@ -125,6 +125,34 @@ async function run() {
       }
     });
 
+    // UPDATE A VOLUNTEER NEEDS POST DATA //
+
+    app.put("/allVolunteerNeedsPosts/:id", async (req, res) => {
+      const { id } = req.params;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedVolunteerNeedPost = req.body;
+
+      const newVolunteerPost = {
+        $set: {
+          thumbnail_URL: updatedVolunteerNeedPost.thumbnail_URL,
+          post_title: updatedVolunteerNeedPost.post_title,
+          description: updatedVolunteerNeedPost.description,
+          category: updatedVolunteerNeedPost.category,
+          location: updatedVolunteerNeedPost.location,
+          volunteersNeeded: updatedVolunteerNeedPost.volunteersNeeded,
+          deadline: updatedVolunteerNeedPost.deadline,
+        },
+      };
+
+      const result = await AllVolunteerNeedsPostsCollections.updateOne(
+        filter,
+        newVolunteerPost,
+        options
+      );
+      res.send(result);
+    });
+
     // FINALLY FINISH THE CODES //
   } finally {
   }
