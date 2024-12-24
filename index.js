@@ -83,6 +83,13 @@ async function run() {
       res.send(result);
     });
 
+    // GET ALL VOLUNTEERS POST DATA //
+
+    app.get("/allVolunteers", async (req, res) => {
+      const result = await AllVolunteersCollections.find().toArray();
+      res.send(result);
+    });
+
     // POST ALL VOLUNTEER NEEDS POST DATA
     app.post("/allVolunteerNeedsPosts", async (req, res) => {
       const newVolunteerNeedsPost = req.body;
