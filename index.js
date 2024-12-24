@@ -144,12 +144,29 @@ async function run() {
           deadline: updatedVolunteerNeedPost.deadline,
         },
       };
-
       const result = await AllVolunteerNeedsPostsCollections.updateOne(
         filter,
         newVolunteerPost,
         options
       );
+      res.send(result);
+    });
+
+    // DELETE A VOLUNTEER NEEDS POST DATA //
+
+    app.delete("/allVolunteerNeedsPosts/:id", async (req, res) => {
+      const { id } = req.params;
+      const query = { _id: new ObjectId(id) };
+      const result = await AllVolunteerNeedsPostsCollections.deleteOne(query);
+      res.send(result);
+    });
+
+    // DELETE A VOLUNTEER REQUEST POST DATA //
+
+    app.delete("/allVolunteers/:id", async (req, res) => {
+      const { id } = req.params;
+      const query = { _id: new ObjectId(id) };
+      const result = await AllVolunteersCollections.deleteOne(query);
       res.send(result);
     });
 
