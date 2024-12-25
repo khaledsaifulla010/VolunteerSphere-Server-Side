@@ -7,7 +7,7 @@ require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT || 5000;
 
-// Middlewares //
+// MIDDLEWARES //
 
 app.use(
   cors({
@@ -25,7 +25,6 @@ const verifyToken = (req, res, next) => {
   if (!token) {
     return res.status(401).send({ message: "Unothorized User Access" });
   }
-
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
     if (err) {
       return res.status(401).send({ message: "Unothorized User Access" });
@@ -50,31 +49,31 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // AUTH RELATED APIS //
-
     app.post("/jwt", async (req, res) => {
       const user = req.body;
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: "5h",
+        expiresIn: "1h",
       });
-
       res
         .cookie("token", token, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+          secure: false,
         })
-        .send({ success: true });
+        .send({ sucess: true });
     });
+
+    //CLEAR COOKIE OFTER LOGOUT //
 
     app.post("/logout", (req, res) => {
       res
         .clearCookie("token", {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+          secure: false,
         })
         .send({ success: true });
     });
+
+    // ALL DATABASE COLLECTIONS //
 
     const VolunteerNeedsNowCollections = client
       .db("VolunteerSphere")
@@ -142,9 +141,11 @@ async function run() {
       async (req, res) => {
         const email = req.query.email;
         const query = { organizerEmail: email };
+
         if (req.user.email !== req.query.email) {
           return res.status(403).send({ message: "Forbidden Access" });
         }
+
         const result = await AllVolunteerNeedsPostsCollections.find(
           query
         ).toArray();
@@ -161,12 +162,19 @@ async function run() {
 
     // GET ALL VOLUNTEERS POST DATA INDIVIDUAL USER EMAIL//
 
-    app.get("/allVolunteersRequestDataIndividually", async (req, res) => {
-      const email = req.query.email;
-      const query = { volunteerEmail: email };
-      const result = await AllVolunteersCollections.find(query).toArray();
-      res.send(result);
-    });
+    app.get(
+      "/allVolunteersRequestDataIndividually",
+      verifyToken,
+      async (req, res) => {
+        const email = req.query.email;
+        const query = { volunteerEmail: email };
+        if (req.user.email !== req.query.email) {
+          return res.status(403).send({ message: "Forbidden Access" });
+        }
+        const result = await AllVolunteersCollections.find(query).toArray();
+        res.send(result);
+      }
+    );
 
     // POST ALL VOLUNTEER NEEDS POST DATA
     app.post("/allVolunteerNeedsPosts", async (req, res) => {
