@@ -25,6 +25,15 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+    //AUTH RELATED APIS //
+
+    app.post("/jwt", async (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "10h",
+      });
+    });
+
     const VolunteerNeedsNowCollections = client
       .db("VolunteerSphere")
       .collection("VolunteerNeedsNow");
