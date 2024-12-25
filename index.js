@@ -18,6 +18,23 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
+// VERIFY TOKEN //
+
+const verifyToken = (req, res, next) => {
+  const token = req?.cookies?.token;
+  if (!token) {
+    return res.status(401).send({ message: "Unothorized User Access" });
+  }
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).send({ message: "Unothorized User Access" });
+    }
+    req.user = decoded;
+    next();
+  });
+};
+
 // Connect With MongoDB //
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.ugbxhsw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -119,14 +136,21 @@ async function run() {
 
     // GET ALL VOLUNTEER NEEDS POST DATA INDIVIDUAL USER EMAIL //
 
-    app.get("/allVolunteerNeedsPostsIndividually", async (req, res) => {
-      const email = req.query.email;
-      const query = { organizerEmail: email };
-      const result = await AllVolunteerNeedsPostsCollections.find(
-        query
-      ).toArray();
-      res.send(result);
-    });
+    app.get(
+      "/allVolunteerNeedsPostsIndividually",
+      verifyToken,
+      async (req, res) => {
+        const email = req.query.email;
+        const query = { organizerEmail: email };
+        if (req.user.email !== req.query.email) {
+          return res.status(403).send({ message: "Forbidden Access" });
+        }
+        const result = await AllVolunteerNeedsPostsCollections.find(
+          query
+        ).toArray();
+        res.send(result);
+      }
+    );
 
     // GET ALL VOLUNTEERS POST DATA //
 
