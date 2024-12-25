@@ -48,6 +48,16 @@ async function run() {
       res.send(result);
     });
 
+    // GET A VOLUNTEER NEEDS NOW DATA //
+
+    app.get("/volunteerNeedsNow/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await VolunteerNeedsNowCollections.findOne(query);
+
+      res.send(result);
+    });
+
     // GET NEWS & BLOGS DATA //
 
     app.get("/newsBlogs", async (req, res) => {
